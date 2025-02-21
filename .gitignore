@@ -1,0 +1,11 @@
+node_modules
+*.mp4
+*.png
+*.jpg
+*.jpeg
+*.gif
+*.webp
+media/*
+output/*
+public
+.DS_Store

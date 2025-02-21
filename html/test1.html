@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Phaser 3 Game</title>
+    <script src="https://cdn.jsdelivr.net/npm/phaser@3.55.2/dist/phaser.min.js"></script>
+</head>
+<body>
+    <script>
+        const config = {
+            type: Phaser.AUTO,
+            width: 800,
+            height: 600,
+            fps: {
+              min: 600,
+            },
+            scene: {
+                preload: function () {
+                    this.load.image('sky', 'https://static.rfstat.com/media/Screen_2018/4gen_2018/whiteboard_animation_toolkit/09_28_2018/screen/e829e8c1-9c35-4194-a6cd-0738d1d9923c.jpg');
+                    // this.load.video('sky', 'https://static.rfstat.com/media/Styles/aa1b2e3e-56c0-4f6d-95cf-8f4cdab25b02.mp4');
+                },
+                create: function () {
+                  this.add.image(400, 300, 'sky');
+                  setTimeout(() => {
+
+                      this.game.renderer.snapshot((img) => {
+                          const imageBase64 = img.src;
+                          // Call the Puppeteer-exposed function
+                          window.sendImageToNode(imageBase64);
+                      });
+                  }, 1000); // Wait 1 second to ensure the image is rendered
+              },
+              update: function (time, delta) {
+                console.log('update', time, delta);
+              }
+            }
+        };
+        const game = new Phaser.Game(config);
+    </script>
+</body>
+</html>

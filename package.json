@@ -1,0 +1,19 @@
+{
+  "name": "phaser",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "bops": "1.0.1",
+    "browserify": "17.0.1",
+    "buffer": "6.0.3",
+    "express": "^4.21.2",
+    "phaser": "^3.87.0",
+    "puppeteer": "^23.11.1"
+  }
+}
