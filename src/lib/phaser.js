@@ -1,4 +1,4 @@
-const path = require('path');
+import path from 'path'
 // const puppeteer = require('puppeteer');
 
 // async function runPhaserGame() {
@@ -26,45 +26,45 @@ const path = require('path');
 // });
 
 
-const puppeteer = require('puppeteer');
-const fs = require('fs');
+import puppeteer from 'puppeteer'
+import fs from 'fs'
 
-async function runPhaserGame() {
-    const browser = await puppeteer.launch({
-        headless: true, // Set to true to run headlessly
-        defaultViewport: null,
-    });
+async function runPhaserGame () {
+  const browser = await puppeteer.launch({
+    headless: true, // Set to true to run headlessly
+    defaultViewport: null
+  })
 
-    const page = await browser.newPage();
+  const page = await browser.newPage()
 
-    page.on('console', async (msg) => {
-      const text = msg.text();
-      console.log({text});
+  page.on('console', async (msg) => {
+    const text = msg.text()
+    console.log({ text })
       
-  });
-    // Expose a function to handle the image data
-    await page.exposeFunction('sendImageToNode', async (imageBase64) => {
-        console.log('Received imageBase64 data.');
+  })
+  // Expose a function to handle the image data
+  await page.exposeFunction('sendImageToNode', async (imageBase64) => {
+    console.log('Received imageBase64 data.')
 
-        // Save the base64 data to a file
-        const base64Data = imageBase64.replace(/^data:image\/png;base64,/, '');
-        fs.writeFileSync('output.png', Buffer.from(base64Data, 'base64'));
-        console.log('Image saved as output.png');
-    });
+    // Save the base64 data to a file
+    const base64Data = imageBase64.replace(/^data:image\/png;base64,/, '')
+    fs.writeFileSync('output.png', Buffer.from(base64Data, 'base64'))
+    console.log('Image saved as output.png')
+  })
 
-    // Load the Phaser game
-    await page.goto(`file://${path.join(__dirname,'../', '/html/test1.html')}`);
+  // Load the Phaser game
+  await page.goto(`file://${path.join(__dirname, '../', '/html/test1.html')}`)
 
-    // Wait for the game to complete rendering and the image to be sent
-    // await page.waitForSelector('canvas');
-    await page.waitForTimeout(10000);
-    // Close the browser
-    await browser.close();
+  // Wait for the game to complete rendering and the image to be sent
+  // await page.waitForSelector('canvas');
+  await page.waitForTimeout(10000)
+  // Close the browser
+  await browser.close()
 }
 
 runPhaserGame().catch((error) => {
-    console.error('Error:', error);
-});
+  console.error('Error:', error)
+})
 
 
 // Promise.all([runPhaserGame()]).catch((err) => {
