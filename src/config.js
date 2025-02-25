@@ -11,3 +11,5 @@ export const puppeteerConfig = {
   protocolTimeout: 6000000,
   defaultViewport: null
 }
+
+export const pageLink = 'http://localhost:3000/index.html'
