@@ -1,6 +1,6 @@
 import fs from 'fs'
 import path from 'path'
-import { exec } from 'child_process'
+import { execSync } from 'child_process'
 
 const dir = '../61e9dabb-41ad-4e6f-882c-af6467d0ffa6/'
 const __dirname = import.meta.dirname
@@ -14,7 +14,7 @@ export const concatVideos = async () => {
   fs.writeFileSync(listPath, filePaths)
 
   try {
-    await exec(
+    execSync(
       `ffmpeg -f concat -safe 0 -i "${listPath}" -c copy "${dir}/file.webm" -y`
     )
     // Clean up the temporary file list
@@ -43,7 +43,7 @@ const listPath = path.resolve(dirFromArgs, 'files.txt')
 fs.writeFileSync(listPath, fileList)
 
 try {
-  await exec(
+  execSync(
     `ffmpeg -f concat -safe 0 -i "${listPath}" -c copy "${dirFromArgs}/file.webm" -y`
   )
 } catch (error) {
