@@ -16,10 +16,8 @@ export async function concatenateVideos (files, outputPath) {
 
   try {
     // Use FFmpeg to concatenate the files
-    await execSync(
-      `ffmpeg -f concat -safe 0 -i "${listPath}" -c copy "${outputPath}" -y`
-    )
-    console.log({ outputPath })
+    const command = `ffmpeg -f concat -safe 0 -i "${listPath}" -c copy "${outputPath}" -y`
+    await execSync(command)
     // Clean up the temporary file list
     // fs.unlinkSync(listPath);
 
@@ -32,19 +30,4 @@ export async function concatenateVideos (files, outputPath) {
     console.error('Error concatenating videos:', error)
     throw error
   }
-}
-
-
-export const concatVideos = async (files, outputPath) => {
-  const outputDir = path.resolve(outputPath, '..')
-  const filePaths = files
-    .map(file => `file '${path.resolve(outputPath, file)}'`)
-    .join('\n')
-
-  const listPath = path.resolve(outputDir, 'files.txt')
-  fs.writeFileSync(listPath, filePaths)
-  const outputFilePath = path.resolve(outputDir, 'output.webm')
-
-  const command = `ffmpeg -f concat -safe 0 -i "${listPath}" -c copy "${outputFilePath}" -y`
-  return execSync(command)
 }

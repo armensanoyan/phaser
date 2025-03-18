@@ -3,10 +3,11 @@ import path from 'path'
 const __dirname = import.meta.dirname
 export const outputRelativePath = path.resolve(__dirname, '../media/output')
 
-export const downloadDir = __dirname // '/Users/user/Downloads'
+export const dirname = __dirname // '/Users/user/Downloads'
+export const downloadDir = path.resolve(dirname, '../public')
 
 export const puppeteerConfig = {
-  headless: true,
+  headless: false,
   devtools: true,
   protocolTimeout: 6000000,
   defaultViewport: null
