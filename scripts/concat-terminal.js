@@ -12,7 +12,7 @@ export const concatVideos = async () => {
     .join('\n')
   const listPath = path.resolve(__dirname, `${dir}/files.txt`)
   fs.writeFileSync(listPath, filePaths)
-
+  
   try {
     execSync(
       `ffmpeg -f concat -safe 0 -i "${listPath}" -c copy "${dir}/file.webm" -y`
@@ -41,11 +41,14 @@ const fileList = files
 
 const listPath = path.resolve(dirFromArgs, 'files.txt')
 fs.writeFileSync(listPath, fileList)
-
+console.log('listPath', listPath)
 try {
-  execSync(
-    `ffmpeg -f concat -safe 0 -i "${listPath}" -c copy "${dirFromArgs}/file.webm" -y`
-  )
+  console.log('listPath', listPath)
+  const command = `ffmpeg -f concat -safe 0 -i "${listPath}" -c copy "${dirFromArgs}/file.webm" -y`
+  console.log('command', command)
+  execSync(command)
+  console.log('listPath', listPath)
+  process.exit(1)
 } catch (error) {
   console.error('Error concatenating videos:', error)
   throw error

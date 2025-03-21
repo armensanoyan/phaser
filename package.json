@@ -6,7 +6,7 @@
   "type": "module",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "concat": "node src/lib/concat-terminal.js"
+    "concat": "node scripts/concat-terminal.js"
   },
   "author": "",
   "license": "ISC",
