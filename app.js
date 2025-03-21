@@ -1,5 +1,6 @@
 import express from 'express'
 import path from 'path'
+import http2 from 'http2'
 import { runPhaserMultiThread } from './src/lib/multi-thread.js'
 // import { sharedPuppeteer } from './src/lib/shared-puppeteer.js'
 // import { runPhaserSingleThread } from './src/lib/engine-single.js'
@@ -10,6 +11,9 @@ const PORT = 3000
 
 app.use(express.static(path.join(__dirname, 'public')))
 
-app.listen(PORT, () => {
+const server = http2.createSecureServer({}, app)
+
+
+server.listen(PORT, () => {
   console.log(`Server is running on http://localhost:${PORT}`)
 })
