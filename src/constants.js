@@ -259,13 +259,13 @@ export const job24Sec = {
     height: 720
   },
   videoDetails: {
-    url: `http://localhost:3000/e.mp4`,
+    url: `https://localhost:3000/e.mp4`,
     startAt: 0
   },
   maxAllowedWorkersCount: 12
 }
 
-export const job24Sec1 = ({ duration = 24000, videoName = 'e.mp4', startAt = 0, endAt, fps = 24 }) => ({
+export const job24Sec1 = ({ duration = 24000, videoName = 'e.mp4', startAt = 0, endAt, fps = 24, resolutions, imagesDir, totalFrames }) => ({
   id: 'testJob',
   canvasObjects: [{
     id: 'test',
@@ -425,15 +425,18 @@ export const job24Sec1 = ({ duration = 24000, videoName = 'e.mp4', startAt = 0, 
     originX: 0,
     originY: 0
   }],
-  targetFps: fps,
+  targetFps: 30, //fps,
   totalDuration: parseInt(duration),
   resolution: {
-    width: 1280,
-    height: 720
+    width: resolutions.width || 1280,
+    height: resolutions.height || 720
   },
   videoDetails: {
-    url: `http://localhost:3000/slices/${videoName}`,
-    startAt: 0
+    // url: `https://localhost:3000/slices/${videoName}`,
+    url: `https://localhost:3000/${videoName}`,
+    startAt: 0,
+    frameUrlPattern: `https://localhost:3000/${imagesDir}/frame_`,
+    totalFrames
   },
-  maxAllowedWorkersCount: 1
+  maxAllowedWorkersCount: 12
 })

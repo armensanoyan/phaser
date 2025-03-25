@@ -9,3 +9,12 @@ media/*
 output/*
 public
 .DS_Store
+*.key
+*.crt
+*.pem
+*.csr
+*.csr.pem
+*.csr.key
+*.csr.pem.key
+*.csr.pem.key.pem
+*.csr.pem.key.pem.key

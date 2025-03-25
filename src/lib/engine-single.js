@@ -1,25 +1,30 @@
 import { job24Sec1 } from '../constants.js'
-import { getFilesDirectory } from '../utils/file-operations.js'
+import { getFilesDirectory, cleanMediaDir } from '../utils/file-operations.js'
 import { Puppeteer } from './puppeteer.js'
 import fs from 'fs'
 import { pageLink } from '../config.js'
 // import { workerData, parentPort } from 'worker_threads'
-import { concatVideos, getVideoDuration, getVideoFPS } from '../utils/ffmpeg-operations.js'
+import { concatVideos, getVideoDuration, getVideoFPS, getVideoDimensions, generateImagesFromVideoAndGetCount } from '../utils/ffmpeg-operations.js'
 import path from 'path'
 
 const CLEANUP_TIMEOUT = 2000// Reduced from 5000ms
 
 export async function runPhaserSingleThread () {
   let puppeteer = null
-  const videoDir = '/Users/user/Documents/renderforest/phaser/public/e.mp4'
+  const __dirname = import.meta.dirname
+  const videoDir = path.resolve(__dirname, '../../', './public/e.mp4')
+  const imagesDir = path.resolve(__dirname, '../../', './public/img')
   try {
     console.log('Processing video chunk:', videoDir)
+    await cleanMediaDir()
     
     // Parallelize metadata extraction
-    const [duration, fps, downloadPath] = await Promise.all([
+    const [duration, fps, downloadPath, resolutions, { totalFrames }] = await Promise.all([
       getVideoDuration(videoDir).then(d => Math.floor(parseFloat(d) * 1000)),
       getVideoFPS(videoDir),
-      getFilesDirectory()
+      getFilesDirectory(),
+      getVideoDimensions(videoDir),
+      generateImagesFromVideoAndGetCount(videoDir, imagesDir, 1)
     ])
 
     puppeteer = new Puppeteer()
@@ -27,7 +32,10 @@ export async function runPhaserSingleThread () {
       duration,
       fps, 
       videoName: videoDir.split('/').pop(),
-      endAt: duration
+      endAt: duration,
+      resolutions,
+      imagesDir,
+      totalFrames
     })
 
     console.log({ type: 'progress', message: 'Starting Puppeteer evaluation', videoDir })

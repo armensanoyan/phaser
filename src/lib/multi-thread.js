@@ -1,27 +1,11 @@
 import { Worker } from 'worker_threads'
-import { concatVideos, getVideoDuration, sliceVideoIntoChunks } from '../utils/ffmpeg-operations.js'
-import { getOrderedFiles } from '../utils/file-operations.js'
+import { concatVideos, sliceVideo } from '../utils/ffmpeg-operations.js'
 import { downloadDir } from '../config.js'
 import path from 'path'
-import os from 'os'
+import { getOptimalThreadCount } from '../utils/util.js'
+import { cleanMediaDir } from '../utils/file-operations.js'
 
-// Get optimal thread count based on CPU cores
-const getOptimalThreadCount = (requestedThreads) => {
-  const cpuCount = os.cpus().length
-  // Leave some cores for system and other processes
-  const maxThreads = Math.max(1, cpuCount - 2)
-  return Math.min(requestedThreads, maxThreads)
-}
-
-const sliceVideo = async (videoUrl, threadCount) => {
-  const videoDuration = await getVideoDuration(videoUrl)
-  const sliceDuration = videoDuration / threadCount
-  const slicesDir = path.resolve(downloadDir, './slices')
-  await sliceVideoIntoChunks(videoUrl, sliceDuration, slicesDir)
-  return getOrderedFiles(slicesDir)
-}
-
-const processChunkWithTimeout = (videoDir, timeoutMs = 3000) => {
+const processChunkWithTimeout = (videoDir, timeoutMs = 30000) => {
   return new Promise((resolve, reject) => {
     const worker = new Worker('./src/lib/engine.js', {
       workerData: { videoDir }
@@ -78,6 +62,8 @@ export const runPhaserMultiThread = async (videoUrl, requestedThreadCount) => {
     const threadCount = getOptimalThreadCount(requestedThreadCount)
     const sendMessage = _sendMessage(lastMessageTime)
 
+    await cleanMediaDir()
+
     sendMessage({ message: `Starting multi-threaded processing with ${threadCount} threads` })
     
     const videosDirs = await sliceVideo(videoUrl, threadCount)
@@ -120,7 +106,7 @@ export const runPhaserMultiThread = async (videoUrl, requestedThreadCount) => {
 }
 
 console.time('runPhaserMultiThread')
-runPhaserMultiThread('./public/e.mp4', 2)
+runPhaserMultiThread('./public/e.mp4', 1)
   .then(outputPath => {
     console.timeEnd('runPhaserMultiThread')
     console.log('Processing completed. Output at:', outputPath)

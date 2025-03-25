@@ -7,14 +7,20 @@ export const dirname = __dirname // '/Users/user/Downloads'
 export const downloadDir = path.resolve(dirname, '../public')
 
 export const puppeteerConfig = {
-  headless: true,
+  headless: false,
   devtools: true,
   protocolTimeout: 6000000,
   defaultViewport: null,
-  args: ['--no-sandbox', '--disable-setuid-sandbox'],
+  args: [
+    '--no-sandbox',
+    '--disable-setuid-sandbox',
+    '--ignore-certificate-errors', // Ignore SSL certificate errors
+    '--ignore-certificate-errors-spki-list',
+    '--ignore-certificate-errors-in-file-urls'
+  ],
   handleSIGINT: false,
   handleSIGTERM: false,
   handleSIGHUP: false
 }
 
-export const pageLink = 'http://localhost:3000/index.html'
+export const pageLink = 'https://localhost:3000/index.html'

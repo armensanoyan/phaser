@@ -2,6 +2,7 @@ import fs from 'fs/promises'
 import path from 'path'
 import { v4 as uuidv4 } from 'uuid'
 import { dirname } from '../config.js'
+import { execSync } from 'child_process'
 
 export async function clearFolder (folderPath) {
   try {
@@ -41,3 +42,9 @@ export const getOrderedFiles = async (dirPath) => {
     .sort((a, b) => parseInt(a.split('.')[0]) - parseInt(b.split('.')[0]))
     .map((file) => path.join(dirPath, file))
 }
+
+export const cleanMediaDir =  () => {
+  const mediaDir = path.resolve(dirname, '..', 'media')
+  execSync(`rm -rf ${mediaDir}/*`)
+}
+

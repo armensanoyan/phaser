@@ -4,10 +4,10 @@ import { Puppeteer } from './puppeteer.js'
 import { pageLink } from '../config.js'
 import { readdirSync } from 'fs'
 import { workerData, parentPort } from 'worker_threads'
-import { concatVideos, getVideoDuration, getVideoFPS } from '../utils/ffmpeg-operations.js'
+import { concatVideos, getVideoDuration, getVideoFPS, getVideoDimensions } from '../utils/ffmpeg-operations.js'
 import path from 'path'
 
-const CLEANUP_TIMEOUT = 2000
+const CLEANUP_TIMEOUT = 1000
 
 const _sendMessage = (initialMeta, lastMessageTime) => (meta) => {
   const currentTime = Date.now()
@@ -25,33 +25,34 @@ export async function runPhaserGame () {
   let lastMessageTime = Date.now()
   const sendMessage = _sendMessage({ videoDir }, lastMessageTime)
   try {
-    const [duration, fps, downloadPath] = await Promise.all([
+    const [duration, fps, downloadPath, resolutions] = await Promise.all([
       getVideoDuration(videoDir).then(d => Math.floor(parseFloat(d) * 1000)),
       getVideoFPS(videoDir),
-      getFilesDirectory()
+      getFilesDirectory(),
+      getVideoDimensions(videoDir)
     ])
     const job = job24Sec1({ 
       duration,
       fps, 
       videoName: videoDir.split('/').pop(),
-      endAt: duration
+      endAt: duration,
+      resolutions
     })
     
-    sendMessage({ message: 'before puppeteer', fps, duration, downloadPath })
+    sendMessage({ message: 'before puppeteer', fps, duration, downloadPath, resolution: job.resolution })
 
     
     await puppeteer.openThePageAndEvaluateThePage(job, downloadPath, pageLink) 
     
     sendMessage({ message: 'after puppeteer' })
     
-    await new Promise(resolve => setTimeout(resolve, 2000))
+    await new Promise(resolve => setTimeout(resolve, CLEANUP_TIMEOUT))
     const files = readdirSync(downloadPath)
     const paths = files.map(item => path.resolve(downloadPath, item))
     
     sendMessage({ message: 'awaiting for files', paths })
     
     // Cleanup resources more quickly
-    await new Promise(resolve => setTimeout(resolve, CLEANUP_TIMEOUT))
     await puppeteer.close()
     puppeteer = null
     
@@ -78,7 +79,6 @@ export async function runPhaserGame () {
   }
 }
 
-// Only run if this is the main thread
 (async () => {
   console.time('runPhaserGame')
   await runPhaserGame()
