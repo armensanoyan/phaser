@@ -40,7 +40,6 @@ export async function runPhaserGame () {
     })
     
     sendMessage({ message: 'before puppeteer', fps, duration, downloadPath, resolution: job.resolution })
-
     
     await puppeteer.openThePageAndEvaluateThePage(job, downloadPath, pageLink) 
     

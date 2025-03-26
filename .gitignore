@@ -18,3 +18,4 @@ public
 *.csr.pem.key
 *.csr.pem.key.pem
 *.csr.pem.key.pem.key
+junk/*

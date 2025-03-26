@@ -10,11 +10,7 @@ const processChunkWithTimeout = (videoDir, timeoutMs = 30000) => {
     const worker = new Worker('./src/lib/engine.js', {
       workerData: { videoDir }
       // Resource limits for each worker
-      // resourceLimits: {
-      //   maxOldGenerationSizeMb: 512, //  size of the main heap in MB
-      //   maxYoungGenerationSizeMb: 512, // size of a heap space for recently created objects
-      //   codeRangeSizeMb: 512 // The size of a pre-allocated memory range used for generated code.
-      // }
+      // resourceLimits: {}
     })
 
     const timeout = setTimeout(() => {
