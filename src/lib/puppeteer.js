@@ -23,7 +23,7 @@ export class Puppeteer {
   
   async evaluateThePage (job) {
     // eslint-disable-next-line no-undef
-    const result = await this.page.evaluate((job) => window.startJob(job), job)
+    const result = await this.page.evaluate((job) => window.processVideoSSR(job), job)
     return result
   }
   
@@ -35,6 +35,4 @@ export class Puppeteer {
     console.timeEnd('evaluateJob')
     return result
   }
-  
-  
 }

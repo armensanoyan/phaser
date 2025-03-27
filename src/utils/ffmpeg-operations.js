@@ -105,14 +105,11 @@ export const generateImagesFromVideoAndGetCount = async (videoUrl, outputDir, fp
     console.log('images not found')
   }
 
-  const command = `ffmpeg -loglevel error -i ${videoUrl} -vf "fps=${fps}" ${outputDir}/frame_%04d.jpg`
+  const command = `ffmpeg -loglevel error -i ${videoUrl} -vf "fps=${fps}" -start_number 0 ${outputDir}/frame_%08d.jpg`
   execSync(command)
   const files = await getOrderedFiles(outputDir)
-  console.log({ files })
-  return {
-    files,
-    totalFrames: files.length
-  }
+  
+  return files
 }
 
 export const generateVideoFromImages = async (imageDir, outputFile) => {

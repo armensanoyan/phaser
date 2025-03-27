@@ -19,12 +19,12 @@ export async function runPhaserSingleThread () {
     await cleanMediaDir()
     
     // Parallelize metadata extraction
-    const [duration, fps, downloadPath, resolutions, { totalFrames }] = await Promise.all([
+    const [duration, fps, downloadPath, resolutions] = await Promise.all([
       getVideoDuration(videoDir).then(d => Math.floor(parseFloat(d) * 1000)),
       getVideoFPS(videoDir),
       getFilesDirectory(),
       getVideoDimensions(videoDir),
-      generateImagesFromVideoAndGetCount(videoDir, imagesDir, 1)
+      generateImagesFromVideoAndGetCount(videoDir, imagesDir)
     ])
 
     puppeteer = new Puppeteer()
@@ -33,9 +33,7 @@ export async function runPhaserSingleThread () {
       fps, 
       videoName: videoDir.split('/').pop(),
       endAt: duration,
-      resolutions,
-      imagesDir,
-      totalFrames
+      resolutions
     })
 
     console.log({ type: 'progress', message: 'Starting Puppeteer evaluation', videoDir })
