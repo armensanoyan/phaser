@@ -4,7 +4,13 @@ import { Puppeteer } from './puppeteer.js'
 import { pageLink } from '../config.js'
 import { readdirSync } from 'fs'
 import { workerData, parentPort } from 'worker_threads'
-import { concatVideos, getVideoDuration, getVideoFPS, getVideoDimensions } from '../utils/ffmpeg-operations.js'
+import { 
+  concatVideos, 
+  getVideoDuration, 
+  getVideoFPS, 
+  getVideoDimensions, 
+  generateImagesFromVideo 
+} from '../utils/ffmpeg-operations.js'
 import path from 'path'
 
 const CLEANUP_TIMEOUT = 1000
@@ -23,13 +29,16 @@ export async function runPhaserGame () {
   const { videoDir } = workerData
   let puppeteer = new Puppeteer()
   let lastMessageTime = Date.now()
+  const __dirname = import.meta.dirname
+  const imagesDir = path.resolve(__dirname, '../../', './public/img')
   const sendMessage = _sendMessage({ videoDir }, lastMessageTime)
   try {
     const [duration, fps, downloadPath, resolutions] = await Promise.all([
       getVideoDuration(videoDir).then(d => Math.floor(parseFloat(d) * 1000)),
       getVideoFPS(videoDir),
       getFilesDirectory(),
-      getVideoDimensions(videoDir)
+      getVideoDimensions(videoDir),
+      generateImagesFromVideo(videoDir, imagesDir)
     ])
     const job = job24Sec1({ 
       duration,

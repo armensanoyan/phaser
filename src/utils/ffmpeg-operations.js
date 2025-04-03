@@ -95,7 +95,7 @@ export const sliceVideo = async (videoUrl, threadCount) => {
   return getOrderedFiles(slicesDir)
 }
 
-export const generateImagesFromVideoAndGetCount = async (videoUrl, outputDir, fps = 0) => {
+export const generateImagesFromVideo = async (videoUrl, outputDir, fps = 0) => {
   if (!fps) {
     fps = await getVideoFPS(videoUrl)
   }

@@ -4,10 +4,10 @@ import { Puppeteer } from './puppeteer.js'
 import fs from 'fs'
 import { pageLink } from '../config.js'
 // import { workerData, parentPort } from 'worker_threads'
-import { concatVideos, getVideoDuration, getVideoFPS, getVideoDimensions, generateImagesFromVideoAndGetCount } from '../utils/ffmpeg-operations.js'
+import { concatVideos, getVideoDuration, getVideoFPS, getVideoDimensions, generateImagesFromVideo } from '../utils/ffmpeg-operations.js'
 import path from 'path'
 
-const CLEANUP_TIMEOUT = 2000// Reduced from 5000ms
+const CLEANUP_TIMEOUT = 1000// Reduced from 5000ms
 
 export async function runPhaserSingleThread () {
   let puppeteer = null
@@ -24,7 +24,7 @@ export async function runPhaserSingleThread () {
       getVideoFPS(videoDir),
       getFilesDirectory(),
       getVideoDimensions(videoDir),
-      generateImagesFromVideoAndGetCount(videoDir, imagesDir)
+      generateImagesFromVideo(videoDir, imagesDir)
     ])
 
     puppeteer = new Puppeteer()
@@ -60,7 +60,6 @@ export async function runPhaserSingleThread () {
     const files = fs.readdirSync(downloadPath)
     const paths = files.map(item => path.resolve(downloadPath, item))
     console.log({ result, paths, job, files, downloadPath })
-    
     
     return concatVideos(paths, downloadPath)
   } catch (error) {
