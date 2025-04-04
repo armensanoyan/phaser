@@ -1,106 +1,12 @@
-const JOB = {
+export const job24Sec1 = ({ duration = 24000, videoName = 'e.mp4', startAt = 0, endAt, fps = 24, resolutions }) => ({
   id: 'testJob',
   canvasObjects: [{
     id: 'test',
     x: 960,
     y: 540,
     type: 'caption',
-    startAt: 0,
-    endsAt: 9000,
-    animations: [],
-    visible: true,
-    scaleX: 1,
-    scaleY: 1,
-    width: 0,
-    height: 0,
-    metadata: {
-      styleData: {
-        id: 1,
-        animation: 'appear',
-        layout: 'verse',
-        positionX: 'left',
-        positionY: 'bottom',
-        backgroundColor: '#000000',
-        backgroundOpacity: 0.5,
-        textColor: '#FF0000',
-        textHighlightColor: '#FF0000',
-        shadowColor: '#FF0000',
-        isTextHighlighted: false,
-        fontData: {
-          id: 123,
-          name: 'Arial',
-          path: 'https://...',
-          characterSize: 24
-        },
-        fontScale: 1.2
-      },
-      texts: [
-        {
-          text: 'text per sentence line1\n text per sentence line2',
-          startTime: '00:00:01',
-          endTime: '00:00:9',
-          words: [
-            {
-              word: 'text',
-              startTime: '00:00:01:000',
-              endTime: '00:00:01:200'
-            },
-            {
-              word: 'per',
-              startTime: '00:00:02:000',
-              endTime: '00:00:02:200'
-            },
-            {
-              word: 'sentence',
-              startTime: '00:00:03',
-              endTime: '00:00:04'
-            },
-            {
-              word: 'line1\n',
-              startTime: '00:00:04',
-              endTime: '00:00:05'
-            },
-            {
-              word: 'text',
-              startTime: '00:00:06',
-              endTime: '00:00:07'
-            },
-            {
-              word: 'per',
-              startTime: '00:00:07',
-              endTime: '00:00:08'
-            },
-            {
-              word: 'sentence',
-              startTime: '00:00:08',
-              endTime: '00:00:09'
-            }
-          ]
-        }
-      ]
-    },
-    alpha: 1,
-    originX: 0,
-    originY: 0
-  }],
-  targetFps: 31,
-  totalDuration: 9000,
-  resolution: {
-    width: 1280,
-    height: 720
-  }
-}
-
-
-export const job24Sec = {
-  id: 'testJob',
-  canvasObjects: [{
-    id: 'test',
-    x: 960,
-    y: 540,
-    type: 'caption',
-    startAt: 0,
-    endsAt: 24000,
+    startAt,
+    endsAt: parseInt(endAt || duration + startAt),
     animations: [],
     visible: true,
     scaleX: 1,
@@ -252,12 +158,18 @@ export const job24Sec = {
     originX: 0,
     originY: 0
   }],
-  targetFps: 30,
-  totalDuration: 24000,
+  targetFps: 30, //fps,
+  totalDuration: parseInt(duration),
   resolution: {
-    width: 1280,
-    height: 720
+    width: resolutions.width || 1280,
+    height: resolutions.height || 720
   },
-  videoUrl: 'http://localhost:3000/e.mp4',
-  maxAllowedWorkersCount: 12
-}
+  videoDetails: {
+    // url: `https://localhost:3000/slices/${videoName}`,
+    url: `https://localhost:3000/${videoName}`,
+    startAt: 0,
+    frameUrlPattern: `https://localhost:3000/img/frame_`,
+    frameExtension: 'jpg'
+  },
+  maxAllowedWorkersCount: 1
+})

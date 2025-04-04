@@ -1,33 +1,94 @@
-import { concatVideos } from './concat-videos.js'
-import { job24Sec } from '../constants.js'
+import { job24Sec1 } from '../constants.js'
 import { getFilesDirectory } from '../utils/file-operations.js'
 import { Puppeteer } from './puppeteer.js'
 import { pageLink } from '../config.js'
+import { readdirSync } from 'fs'
+import { workerData, parentPort } from 'worker_threads'
+import { 
+  concatVideos, 
+  getVideoDuration, 
+  getVideoFPS, 
+  getVideoDimensions, 
+  generateImagesFromVideo 
+} from '../utils/ffmpeg-operations.js'
+import path from 'path'
 
+const CLEANUP_TIMEOUT = 1000
+
+const _sendMessage = (initialMeta, lastMessageTime) => (meta) => {
+  const currentTime = Date.now()
+  parentPort.postMessage({
+    ...initialMeta,
+    ...meta,
+    timeSinceLastMessage: currentTime - lastMessageTime
+  })
+  lastMessageTime = currentTime
+}
 
 export async function runPhaserGame () {
+  const { videoDir } = workerData
+  let puppeteer = new Puppeteer()
+  let lastMessageTime = Date.now()
+  const __dirname = import.meta.dirname
+  const imagesDir = path.resolve(__dirname, '../../', './public/img')
+  const sendMessage = _sendMessage({ videoDir }, lastMessageTime)
   try {
-    const downloadPath = await getFilesDirectory()
-    const puppeteer = new Puppeteer()
-    const result = await puppeteer.openThePageAndEvaluateThePage(job24Sec, downloadPath, pageLink)
+    const [duration, fps, downloadPath, resolutions] = await Promise.all([
+      getVideoDuration(videoDir).then(d => Math.floor(parseFloat(d) * 1000)),
+      getVideoFPS(videoDir),
+      getFilesDirectory(),
+      getVideoDimensions(videoDir),
+      generateImagesFromVideo(videoDir, imagesDir)
+    ])
+    const job = job24Sec1({ 
+      duration,
+      fps, 
+      videoName: videoDir.split('/').pop(),
+      endAt: duration,
+      resolutions
+    })
+    
+    sendMessage({ message: 'before puppeteer', fps, duration, downloadPath, resolution: job.resolution })
+    
+    await puppeteer.openThePageAndEvaluateThePage(job, downloadPath, pageLink) 
+    
+    sendMessage({ message: 'after puppeteer' })
+    
+    await new Promise(resolve => setTimeout(resolve, CLEANUP_TIMEOUT))
+    const files = readdirSync(downloadPath)
+    const paths = files.map(item => path.resolve(downloadPath, item))
+    
+    sendMessage({ message: 'awaiting for files', paths })
+    
+    // Cleanup resources more quickly
+    await puppeteer.close()
+    puppeteer = null
+    
+    const result = await concatVideos(paths, downloadPath)
+    sendMessage({ 
+      message: 'complete',
+      downloadPath,
+      result,
+      paths
+    })
+    return result
 
-    setTimeout(() => puppeteer.close(), 5000)
-    return concatVideos(result, downloadPath)
-     
   } catch (error) {
-    console.log('Error in page evaluation:', error)
+    // Send error message to parent
+    await puppeteer.close()
+    puppeteer = null
+    
+    sendMessage({ 
+      message: 'error', 
+      error: error.message, 
+      videoDir
+    })
     process.exit(1)
   }
-
-
 }
 
 (async () => {
-  try {
-    await runPhaserGame()
-    return process.exit(1)
-  } catch (error) {
-    console.error('Failed to run Phaser game:', error)
-    process.exit(1)
-  }
+  console.time('runPhaserGame')
+  await runPhaserGame()
+  console.timeEnd('runPhaserGame')
 })()

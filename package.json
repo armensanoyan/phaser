@@ -6,7 +6,9 @@
   "type": "module",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "concat": "node src/lib/concat-terminal.js"
+    "concat": "node scripts/concat-terminal.js",
+    "generate-certs": "node scripts/generate-cert.js",
+    "start": "npm run generate-certs && node app.js"
   },
   "author": "",
   "license": "ISC",
@@ -14,9 +16,16 @@
     "bops": "1.0.1",
     "browserify": "17.0.1",
     "buffer": "6.0.3",
+    "cors": "2.8.5",
     "express": "^4.21.2",
+    "http2": "3.3.7",
+    "koa": "2.16.0",
+    "koa-route": "4.0.1",
+    "koa-static": "5.0.0",
     "phaser": "^3.87.0",
     "puppeteer": "^23.11.1",
+    "spd": "1.0.0",
+    "spdy": "4.0.2",
     "uuid": "11.1.0"
   },
   "devDependencies": {
