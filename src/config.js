@@ -23,4 +23,4 @@ export const puppeteerConfig = {
   handleSIGHUP: false
 }
 
-export const pageLink = 'https://localhost:3000/index.html'
+export const pageLink = 'http://localhost:3000/index.html'

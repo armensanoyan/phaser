@@ -47,7 +47,7 @@ export const job24Sec1 = ({ duration = 24000, videoName = 'e.mp4', startAt = 0, 
         fontData: {
           id: 123,
           name: 'Arial',
-          path: 'https://...',
+          path: 'http://...',
           characterSize: 24
         },
         fontScale: 1.2
@@ -166,9 +166,9 @@ export const job24Sec1 = ({ duration = 24000, videoName = 'e.mp4', startAt = 0, 
   },
   videoDetails: {
     // url: `https://localhost:3000/slices/${videoName}`,
-    url: `https://localhost:3000/${videoName}`,
+    url: `http://localhost:3000/${videoName}`,
     startAt: 0,
-    frameUrlPattern: `https://localhost:3000/img/frame_`,
+    frameUrlPattern: `http://localhost:3000/img/frame_`,
     frameExtension: 'jpg'
   },
   maxAllowedWorkersCount: 1
